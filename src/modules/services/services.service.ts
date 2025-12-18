@@ -2,6 +2,8 @@ import { CategoriesDocument, CategoriesEntity } from '@faizudheen/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { GetCategoriesWithTopRatedServicesInput } from './dto/getCategoriesWithTopRatedServices.input';
+import { PaginatedCategoriesWithTopRatedServicesDTO } from './dto/PaginatedCategoriesWithTopRatedServices.dto';
 
 @Injectable()
 export class ServicesService {
@@ -10,18 +12,15 @@ export class ServicesService {
         private readonly categoriesModel: Model<CategoriesDocument>
     ) { }
 
-    async getCategoriesWithTopServices(limitPerCategory = 5) {
-        const result = await this.categoriesModel.aggregate([
-            // 1️⃣ Project category fields
-            {
-                $project: {
-                    name: 1,
-                    slug: 1,
-                    iconUrl: 1,
-                },
-            },
+    async getCategoriesWithTopServices(
+        input: GetCategoriesWithTopRatedServicesInput
+    ): Promise<PaginatedCategoriesWithTopRatedServicesDTO> {
 
-            // 2️⃣ Lookup services under each category
+        const searchRegex = input.search
+            ? new RegExp(input.search, 'i')
+            : null;
+
+        const pipeline: any[] = [
             {
                 $lookup: {
                     from: 'services',
@@ -31,14 +30,12 @@ export class ServicesService {
                             $match: {
                                 $expr: {
                                     $and: [
-                                        { $eq: ['$category', '$$categoryId'] }, // correct field
+                                        { $eq: ['$category', '$$categoryId'] },
                                         { $eq: ['$isActive', true] },
                                     ],
                                 },
                             },
                         },
-
-                        // 3️⃣ Sort: ratings (future) → createdAt (now)
                         {
                             $sort: {
                                 avgRating: -1,
@@ -46,77 +43,119 @@ export class ServicesService {
                                 createdAt: -1,
                             },
                         },
-
-                        // 4️⃣ Limit per category
                         {
-                            $limit: limitPerCategory,
+                            $lookup: {
+                                from: 'servicetiers',
+                                localField: 'pricingTiers.tierId',
+                                foreignField: '_id',
+                                as: 'tierDocs',
+                            },
                         },
-
-                        // 5️⃣ Project only needed fields
+                        {
+                            $addFields: {
+                                pricingTiers: {
+                                    $map: {
+                                        input: '$pricingTiers',
+                                        as: 'pt',
+                                        in: {
+                                            $mergeObjects: [
+                                                '$$pt',
+                                                {
+                                                    tier: {
+                                                        $arrayElemAt: [
+                                                            {
+                                                                $filter: {
+                                                                    input: '$tierDocs',
+                                                                    as: 't',
+                                                                    cond: { $eq: ['$$t._id', '$$pt.tierId'] },
+                                                                },
+                                                            },
+                                                            0,
+                                                        ],
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                            },
+                        },
                         {
                             $project: {
-                                name: 1,
-                                pricingTiers: 1,
-                                currency: 1,
-                                avgRating: 1,
-                                totalRatings: 1,
-                                createdAt: 1,
+                                tierDocs: 0,
                             },
                         },
                     ],
                     as: 'services',
                 },
+            }
+            ,
+            ...(searchRegex
+                ? [
+                    {
+                        $addFields: {
+                            services: {
+                                $cond: {
+                                    if: { $regexMatch: { input: '$name', regex: searchRegex } },
+                                    then: '$services',
+                                    else: {
+                                        $filter: {
+                                            input: '$services',
+                                            as: 'service',
+                                            cond: {
+                                                $regexMatch: {
+                                                    input: '$$service.name',
+                                                    regex: searchRegex,
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ]
+                : []),
+            {
+                $addFields: {
+                    services: { $slice: ['$services', input.servicesLimitPerCategory] },
+                },
             },
-
-            // 6️⃣ Remove categories without services
             {
                 $match: {
                     'services.0': { $exists: true },
                 },
             },
-        ]);
-
-        // 7️⃣ Map services → price ranges
-        return result.map(category => ({
-            _id: category._id,
-            name: category.name,
-            slug: category.slug,
-            iconUrl: category.iconUrl,
-            services: category.services.map(service =>
-                this.mapServiceWithPriceRange(service),
-            ),
-        }));
-    }
-
-
-
-    private mapServiceWithPriceRange(service: any) {
-        const hourlyRates: number[] = [];
-        const perDayRates: number[] = [];
-
-        for (const tier of service.pricingTiers ?? []) {
-            if (tier.HOURLY?.ratePerHour > 0) {
-                hourlyRates.push(tier.HOURLY.ratePerHour);
-            }
-            if (tier.PER_DAY?.ratePerDay > 0) {
-                perDayRates.push(tier.PER_DAY.ratePerDay);
-            }
-        }
-
-        return {
-            _id: service._id,
-            name: service.name,
-            avgRating: service.avgRating,
-            totalRatings: service.totalRatings,
-            priceRange: {
-                hourly:
-                    hourlyRates ?? null,
-                perDay:
-                    perDayRates ?? null,
+            {
+                $skip: (input.page - 1) * input.limit,
             },
-            currency: service.currency,
+            {
+                $limit: input.limit,
+            },
+        ];
+
+        const data = await this.categoriesModel.aggregate(pipeline);
+        const countPipeline = pipeline.filter(
+            stage => !('$skip' in stage) && !('$limit' in stage)
+        ).concat({ $count: 'total' });
+
+        const totalResult = await this.categoriesModel.aggregate(countPipeline);
+        const total = totalResult[0]?.total ?? 0;
+        return {
+            data,
+            pagination: {
+                totalItems: total,
+                totalPages: Math.ceil(total / input.limit),
+                currentPage: input.page,
+                hasNextPage: input.page < Math.ceil(total / input.limit),
+                hasPrevPage: input.page > 1,
+            },
         };
     }
+
+
+
+
 
 
 }
