@@ -7,6 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClodinaryModule } from '@faizudheen/shared';
 import { ServicesModule } from './modules/services/services.module';
+import { BookingModule } from './modules/booking/booking.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -16,8 +18,12 @@ import { ServicesModule } from './modules/services/services.module';
     }),
     ClodinaryModule,
     MongooseModule.forRoot(process.env.MONGO_DB_URI!),
-    AuthModule, 
-    UserModule, ServicesModule],
+    AuthModule,
+    EventEmitterModule.forRoot({
+      wildcard:true,
+      delimiter:'.'
+    }),
+    UserModule, ServicesModule, BookingModule],
   controllers: [AppController],
   providers: [AppService],
 })
