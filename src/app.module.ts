@@ -9,6 +9,7 @@ import { ClodinaryModule } from '@faizudheen/shared';
 import { ServicesModule } from './modules/services/services.module';
 import { BookingModule } from './modules/booking/booking.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { RedisModule } from './redis.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
        isGlobal:true,
        envFilePath:'.env'
     }),
+    RedisModule,
     ClodinaryModule,
     MongooseModule.forRoot(process.env.MONGO_DB_URI!),
     AuthModule,
