@@ -3,6 +3,7 @@ import { BookingStatus, BookingService as CommonBookingService, CreateBookingInp
 import type { JwtUser } from '@faizudheen/shared';
 import { Types } from 'mongoose';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { BookingService } from './booking.service';
 
 @ApiTags('booking')
 @ApiBearerAuth()
@@ -10,7 +11,8 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nes
 @UseGuards(JwtAuthGuard)
 export class BookingController {
     constructor(
-        private readonly commonBookingService: CommonBookingService
+        private readonly commonBookingService: CommonBookingService,
+        private readonly bookingService: BookingService
     ) { }
 
 
@@ -34,5 +36,30 @@ export class BookingController {
         @CurrentUser() user: JwtUser
     ) {
         return await this.commonBookingService.findExistingBooking(new Types.ObjectId(user.id))
+    }
+
+
+    @Get('categories')
+    @ApiOperation({ summary: 'Get categories' })
+    @ApiResponse({ status: 200, description: 'Return categories' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    async getCategories() {
+        return await this.bookingService.getCategories()
+    }
+
+    @Get('services')
+    @ApiOperation({ summary: 'Get services' })
+    @ApiResponse({ status: 200, description: 'Return services' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    async getServices() {
+        return await this.bookingService.getServices()
+    }
+
+    @Get('pricing-tiers')
+    @ApiOperation({ summary: 'Get pricing tiers' })
+    @ApiResponse({ status: 200, description: 'Return pricing tiers' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    async getTier() {
+        return await this.bookingService.getTier()
     }
 }
