@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
-import {BookingModule as CommonBookingModule} from '@faizudheen/shared'
+import {CategoriesEntity, CategoriesSchema, BookingModule as CommonBookingModule, ServiceEntity, ServiceSchema, ServiceTier, ServiceTierSchema} from '@faizudheen/shared'
 import { BookingController } from './booking.controller';
 import { BookingService } from './booking.service';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
     imports:[
-        CommonBookingModule
+        CommonBookingModule,
+        MongooseModule.forFeature([
+            {name:CategoriesEntity.name, schema: CategoriesSchema},
+            {name:ServiceEntity.name, schema: ServiceSchema},
+            {name:ServiceTier.name, schema: ServiceTierSchema}
+        ])
     ],
     controllers: [BookingController],
     providers: [BookingService]
