@@ -107,9 +107,9 @@ export class UserService {
 
         
 
-        if(files.profileImage){
+        if(files?.profileImage){
 
-            if (user.profilePicturePublicId) {
+            if (user?.profilePicturePublicId) {
                 await this.cloudinaryService.deleteFile(user.profilePicturePublicId);
             }
 
@@ -118,13 +118,13 @@ export class UserService {
             user.profilePicturePublicId = profileImage.public_id
         }
 
-        if(files.idProof){
+        if(files?.idProof){
             await this.replaceDocument(id, user, files.idProof[0], 'idProof');
         }
-        if(files.addressProof){
+        if(files?.addressProof){
             await this.replaceDocument(id, user, files.addressProof[0],'addressProof');
         }
-        if(files.photoProof){
+        if(files?.photoProof){
             await this.replaceDocument(id, user, files.photoProof[0],'photoProof');
         }
 
