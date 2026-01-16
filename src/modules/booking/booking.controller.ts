@@ -4,6 +4,7 @@ import type { JwtUser } from '@faizudheen/shared';
 import { Types } from 'mongoose';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BookingService } from './booking.service';
+import { CancelBookingInput } from './dto/cancel-booking.input';
 
 @ApiTags('booking')
 @ApiBearerAuth()
@@ -61,5 +62,17 @@ export class BookingController {
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     async getTier() {
         return await this.bookingService.getTier()
+    }
+
+
+    @Post('cancel')
+    @ApiOperation({ summary: 'Cancel a booking' })
+    @ApiResponse({ status: 200, description: 'Booking cancelled successfully' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    async cancelBooking(
+        @CurrentUser() user: JwtUser,
+        @Body() cancelBookingDto: CancelBookingInput
+    ) {
+        return await this.commonBookingService.cancelBooking(new Types.ObjectId(cancelBookingDto.bookingId),new Types.ObjectId(user.id) )
     }
 }
