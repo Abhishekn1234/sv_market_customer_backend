@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CategoriesEntity, CategoriesSchema, BookingModule as CommonBookingModule, ServiceEntity, ServiceSchema, ServiceTier, ServiceTierSchema, BookingEntity, BookingSchema, PaymentEntity, PaymentSchema, WorkerEntity, WorkerSchema, AssignWorkerEntity, AssignWorkerSchema } from '@faizudheen/shared'
+import { CategoriesEntity, CategoriesSchema, BookingModule as CommonBookingModule, ServiceEntity, ServiceSchema, ServiceTier, ServiceTierSchema, BookingEntity, BookingSchema, PaymentEntity, PaymentSchema, WorkerEntity, WorkerSchema, AssignWorkerEntity, AssignWorkerSchema } from '@svmarket/shared'
 import { BookingController } from './booking.controller';
 import { BookingService } from './booking.service';
 import { MongooseModule } from '@nestjs/mongoose';

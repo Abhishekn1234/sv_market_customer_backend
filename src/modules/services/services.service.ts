@@ -1,4 +1,4 @@
-import { CategoriesDocument, CategoriesEntity } from '@faizudheen/shared';
+import { CategoriesDocument, CategoriesEntity } from '@svmarket/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';

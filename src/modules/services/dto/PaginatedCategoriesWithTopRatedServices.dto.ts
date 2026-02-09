@@ -1,4 +1,4 @@
-import { PaginationDTO } from "@faizudheen/shared";
+import { PaginationDTO } from "@svmarket/shared";
 import { CategoriesWithServicesDTO } from "./CategoriesWithServices.dto";
 import { ApiProperty } from "@nestjs/swagger";
 

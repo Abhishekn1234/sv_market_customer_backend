@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { BookingStatus, BookingService as CommonBookingService, CreateBookingInput, CurrentUser, JwtAuthGuard, GenerateOTPInput, PaymentInput } from '@faizudheen/shared';
-import type { JwtUser } from '@faizudheen/shared';
+import { BookingStatus, BookingService as CommonBookingService, CreateBookingInput, CurrentUser, JwtAuthGuard, GenerateOTPInput, PaymentInput } from '@svmarket/shared';
+import type { JwtUser } from '@svmarket/shared';
 import { Types } from 'mongoose';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BookingService } from './booking.service';

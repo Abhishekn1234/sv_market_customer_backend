@@ -1,7 +1,7 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ServicesService } from './services.service';
 import { GetCategoriesWithTopRatedServicesInput } from './dto/getCategoriesWithTopRatedServices.input';
-import { JwtAuthGuard } from '@faizudheen/shared';
+import { JwtAuthGuard } from '@svmarket/shared';
 import { PaginatedCategoriesWithTopRatedServicesDTO } from './dto/PaginatedCategoriesWithTopRatedServices.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 

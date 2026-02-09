@@ -1,4 +1,4 @@
-import { PaginationInput } from "@faizudheen/shared";
+import { PaginationInput } from "@svmarket/shared";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsNumber, IsOptional, ValidateNested } from "class-validator";

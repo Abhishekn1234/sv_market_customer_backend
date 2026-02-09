@@ -20,7 +20,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@faizudheen/shared": "^1.5.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -29,6 +28,9 @@
     "@nestjs/mongoose": "^11.0.4",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.3",
+    "@sv_market/shared": "github:Abhishekn1234/sv_market_shared_lib",
+    "@svmarket/shared": "github:Abhishekn1234/sv_market_shared_lib",
+    "@svmarket/shared-lib": "github:Abhishekn1234/sv_market_shared_lib",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",

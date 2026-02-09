@@ -1,9 +1,9 @@
-import { UserEntity, UserEntityDocument } from '@faizudheen/shared/dist/users/schemas/user.schema';
+import { UserEntity, UserEntityDocument } from '@svmarket/shared/dist/users/schemas/user.schema';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserInput } from './dto/create-user.input';
-import { CloudinaryService, DocumentEntity, DocumentEntityDocument, KycStatus, ModuleEntity, UserDTO, UserGroup, UserGroupDocument } from '@faizudheen/shared';
+import { CloudinaryService, DocumentEntity, DocumentEntityDocument, KycStatus, ModuleEntity, UserDTO, UserGroup, UserGroupDocument } from '@svmarket/shared';
 import * as bcrypt from 'bcrypt'
 import { UpdateUserInput } from './dto/update-user.input';
 

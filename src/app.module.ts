@@ -5,8 +5,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ClodinaryModule } from '@faizudheen/shared';
+import { ClodinaryModule } from '@svmarket/shared';
 import { ServicesModule } from './modules/services/services.module';
+import { LanguageModule } from './modules/language/language.module';
 import { BookingModule } from './modules/booking/booking.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { RedisModule } from './redis.module';
@@ -21,6 +22,7 @@ import { RedisModule } from './redis.module';
     ClodinaryModule,
     MongooseModule.forRoot(process.env.MONGO_DB_URI!),
     AuthModule,
+    LanguageModule,
     EventEmitterModule.forRoot({
       wildcard:true,
       delimiter:'.'

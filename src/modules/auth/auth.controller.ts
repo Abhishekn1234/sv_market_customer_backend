@@ -2,12 +2,12 @@ import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CreateUserInput } from '../user/dto/create-user.input';
-import { CurrentUser, JwtAuthGuard, LoginInput, RefreshGuard, VerificationDTO } from '@faizudheen/shared';
+import { CurrentUser, JwtAuthGuard, LoginInput, RefreshGuard, VerificationDTO } from '@svmarket/shared';
 import { SendOtpInput } from './dto/send-otp.input';
 import { VerifyOtpInput } from './dto/verify-otp.input';
 import { ResetPasswordInput } from './dto/reset-password.input';
 import { RefreshTokenInput } from './dto/refresh-token.input';
-import type { JwtUser } from '@faizudheen/shared';
+import type { JwtUser } from '@svmarket/shared';
 
 @ApiTags('Auth')
 @Controller('auth')

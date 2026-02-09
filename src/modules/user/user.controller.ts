@@ -1,5 +1,5 @@
-import { CurrentUser, JwtAuthGuard, UserDTO } from '@faizudheen/shared';
-import type { JwtUser } from '@faizudheen/shared';
+import { CurrentUser, JwtAuthGuard, UserDTO } from '@svmarket/shared';
+import type { JwtUser } from '@svmarket/shared';
 import {
     BadRequestException,
     Body,

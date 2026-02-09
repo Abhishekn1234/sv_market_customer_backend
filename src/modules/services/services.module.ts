@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ServicesService } from './services.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CategoriesEntity, CategoriesSchema } from '@faizudheen/shared';
+import { CategoriesEntity, CategoriesSchema } from '@svmarket/shared';
 import { ServicesController } from './services.controller';
 
 
