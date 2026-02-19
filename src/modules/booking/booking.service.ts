@@ -31,8 +31,20 @@ export class BookingService {
     }
 
     async getServices() {
-        return await this.servicesModel.find()
-    }
+    return await this.servicesModel
+        .find({ isActive: true })
+        .populate({
+            path: 'pricingTiers.tierId',
+            model: ServiceTier.name
+        })
+        .populate({
+            path: 'category',
+            model: CategoriesEntity.name
+        })
+        .lean();
+}
+
+
 
     async getTier() {
         return await this.serviceTierModel.find()

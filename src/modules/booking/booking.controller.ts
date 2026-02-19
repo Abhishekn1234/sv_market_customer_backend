@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, UseGuards } from '@nestjs/common';
 import { BookingStatus, BookingService as CommonBookingService, CreateBookingInput, CurrentUser, JwtAuthGuard, GenerateOTPInput, PaymentInput } from '@svmarket/shared';
 import type { JwtUser } from '@svmarket/shared';
 import { Types } from 'mongoose';
@@ -17,17 +17,26 @@ export class BookingController {
     ) { }
 
 
-    @Post('create')
-    @ApiOperation({ summary: 'Create a new booking' })
-    @ApiBody({ type: CreateBookingInput })
-    @ApiResponse({ status: 201, description: 'Booking created successfully' })
-    @ApiResponse({ status: 401, description: 'Unauthorized' })
-    async createBooking(
-        @CurrentUser() user: JwtUser,
-        @Body() createBookingDto: CreateBookingInput
-    ) {
-        return this.commonBookingService.createBooking(new Types.ObjectId(user.id), createBookingDto)
-    }
+ @Post('create')
+@ApiOperation({ summary: 'Create a new booking' })
+@ApiBody({ type: CreateBookingInput })
+@ApiResponse({ status: 201, description: 'Booking created successfully' })
+@ApiResponse({ status: 401, description: 'Unauthorized' })
+async createBooking(
+  @CurrentUser() user: JwtUser,
+  @Body() createBookingDto: CreateBookingInput
+) {
+    console.log("Received booking creation request:");
+  console.log("============== BOOKING REQUEST ==============");
+  console.log("User ID:", user.id);
+  console.log("Booking DTO:", createBookingDto);
+  console.log("=============================================");
+
+  return this.commonBookingService.createBooking(
+    new Types.ObjectId(user.id),
+    createBookingDto
+  );
+}
 
     @Get()
     @ApiOperation({ summary: 'Get current active booking for the user' })
@@ -47,6 +56,7 @@ export class BookingController {
     async getCategories() {
         return await this.bookingService.getCategories()
     }
+     
 
     @Get('services')
     @ApiOperation({ summary: 'Get services' })
@@ -138,5 +148,13 @@ export class BookingController {
     ) {
         return await this.bookingService.verifyPaymentMock(new Types.ObjectId(user.id), new Types.ObjectId(paymentId));
     }
+    @Get(":bookingId")   
+async getBookingById(@Param("bookingId") id: string) {
+  if (!Types.ObjectId.isValid(id)) {
+    throw new NotFoundException("Invalid booking ID");
+  }
+
+  return this.commonBookingService.getBookingFullDetails(id);
+}
 }
 

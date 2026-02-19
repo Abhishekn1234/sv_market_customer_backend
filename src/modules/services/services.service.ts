@@ -1,4 +1,4 @@
-import { CategoriesDocument, CategoriesEntity } from '@svmarket/shared';
+import { CategoriesDocument, CategoriesEntity,ServiceTier } from '@svmarket/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -50,6 +50,15 @@ export class ServicesService {
                                 foreignField: '_id',
                                 as: 'tierDocs',
                             },
+                        },
+                        {
+                            $lookup:{
+                             from :"categories",
+                             localField:"category",
+                             foreignField: '_id',
+                                as: 'category',
+
+                            }
                         },
                         {
                             $addFields: {
@@ -135,6 +144,7 @@ export class ServicesService {
         ];
 
         const data = await this.categoriesModel.aggregate(pipeline);
+        console.log(data);
         const countPipeline = pipeline.filter(
             stage => !('$skip' in stage) && !('$limit' in stage)
         ).concat({ $count: 'total' });

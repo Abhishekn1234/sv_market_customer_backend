@@ -92,53 +92,58 @@ export class UserService {
         return user
     }
 
-    async updateProfile(id: string, input: UpdateUserInput, files:{
-        profileImage?: Express.Multer.File[];
-        idProof?: Express.Multer.File[];
-        addressProof?: Express.Multer.File[];
-        photoProof?: Express.Multer.File[];
-    }){
-        const user = await this.findById(id);
-        if(!user){
-            throw new NotFoundException("User not found")
-        }
-        user.fullName = input.fullName ?? user.fullName
-        user.address = input.address ?? user.address
+    async updateProfile(
+  id: string,
+  input: UpdateUserInput,
+  files?: {
+    profileImage?: Express.Multer.File[];
+    idProof?: Express.Multer.File[];
+    addressProof?: Express.Multer.File[];
+    photoProof?: Express.Multer.File[];
+  }
+) {
+  const user = await this.findById(id);
+  if (!user) {
+    throw new NotFoundException("User not found");
+  }
 
-        
+  user.fullName = input.fullName ?? user.fullName;
+  user.address = input.address ?? user.address;
 
-        if(files?.profileImage){
-
-            if (user?.profilePicturePublicId) {
-                await this.cloudinaryService.deleteFile(user.profilePicturePublicId);
-            }
-
-            const profileImage = await this.cloudinaryService.uploadFile(files.profileImage[0],`users/${user._id}/profileImage`);
-            user.profilePictureUrl = profileImage.url
-            user.profilePicturePublicId = profileImage.public_id
-        }
-
-        if(files?.idProof){
-            await this.replaceDocument(id, user, files.idProof[0], 'idProof');
-        }
-        if(files?.addressProof){
-            await this.replaceDocument(id, user, files.addressProof[0],'addressProof');
-        }
-        if(files?.photoProof){
-            await this.replaceDocument(id, user, files.photoProof[0],'photoProof');
-        }
-
-        if (
-            files.idProof?.length ||
-            files.addressProof?.length ||
-            files.photoProof?.length
-        ) {
-            user.kycStatus = KycStatus.PENDING;
-        }
-
-        await user.save();
-        return this.findById(user._id.toString())
+  if (files?.profileImage) {
+    if (user?.profilePicturePublicId) {
+      await this.cloudinaryService.deleteFile(user.profilePicturePublicId);
     }
+
+    const profileImage = await this.cloudinaryService.uploadFile(
+      files.profileImage[0],
+      `users/${user._id}/profileImage`
+    );
+    user.profilePictureUrl = profileImage.url;
+    user.profilePicturePublicId = profileImage.public_id;
+  }
+
+  if (files?.idProof) {
+    await this.replaceDocument(id, user, files.idProof[0], "idProof");
+  }
+  if (files?.addressProof) {
+    await this.replaceDocument(id, user, files.addressProof[0], "addressProof");
+  }
+  if (files?.photoProof) {
+    await this.replaceDocument(id, user, files.photoProof[0], "photoProof");
+  }
+
+  if (
+    files?.idProof?.length ||
+    files?.addressProof?.length ||
+    files?.photoProof?.length
+  ) {
+    user.kycStatus = KycStatus.PENDING;
+  }
+
+  await user.save();
+  return this.findById(user._id.toString());
+}
 
     private async replaceDocument(
         userId: string,

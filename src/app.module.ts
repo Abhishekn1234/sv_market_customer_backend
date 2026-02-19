@@ -11,6 +11,7 @@ import { LanguageModule } from './modules/language/language.module';
 import { BookingModule } from './modules/booking/booking.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { RedisModule } from './redis.module';
+import { LocationsModule } from './modules/location/location.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { RedisModule } from './redis.module';
     MongooseModule.forRoot(process.env.MONGO_DB_URI!),
     AuthModule,
     LanguageModule,
+    LocationsModule,
     EventEmitterModule.forRoot({
       wildcard:true,
       delimiter:'.'

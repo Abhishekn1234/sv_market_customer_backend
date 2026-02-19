@@ -1,33 +1,32 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { Language } from "@svmarket/shared";
-import { SelectLanguageDto } from "@svmarket/shared";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Language, LanguageDocument } from '@svmarket/shared';
+import { SelectLanguageDto } from '@svmarket/shared';
 
 @Injectable()
 export class LanguageService {
   constructor(
-    @InjectModel(Language.name) private languageModel: Model<Language>,
+    @InjectModel(Language.name) private languageModel: Model<LanguageDocument>,
   ) {}
 
-  async createOrUpdateLanguage(mobile: string, dto: SelectLanguageDto) {
-    const existing = await this.languageModel.findOne({ mobile });
-    if (existing) {
-      existing.language = dto.language;
-      return existing.save();
+  // Set or update language
+  async setLanguage(dto: SelectLanguageDto): Promise<Language> {
+    let lang = await this.languageModel.findOne();
+    if (!lang) {
+      lang = new this.languageModel(dto);
+    } else {
+      lang.language = dto.language;
     }
-
-    const created = new this.languageModel({ mobile, language: dto.language });
-    return created.save();
+    return lang.save();
   }
 
-  async getLanguageByMobile(mobile: string) {
-    const lang = await this.languageModel.findOne({ mobile });
-    if (!lang) throw new NotFoundException("Language not found for this mobile");
+  // Get language (default 'en' if not set)
+  async getLanguage(): Promise<Language | { language: string }> {
+    const lang = await this.languageModel.findOne();
+    if (!lang) {
+      return { language: 'en' };
+    }
     return lang;
-  }
-
-  async getAllLanguages() {
-    return this.languageModel.find();
   }
 }

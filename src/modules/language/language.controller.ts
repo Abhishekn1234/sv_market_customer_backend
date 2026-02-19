@@ -1,26 +1,23 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
-import { LanguageService } from "./language.service";
-import { SelectLanguageDto } from "@svmarket/shared";
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ApiTags, ApiBody } from '@nestjs/swagger';
+import { LanguageService } from './language.service';
+import { SelectLanguageDto } from '@svmarket/shared';
 
-@Controller("language")
+@ApiTags('Language')
+@Controller('language')
 export class LanguageController {
   constructor(private readonly languageService: LanguageService) {}
 
-  @Post(":mobile")
-  async setLanguage(
-    @Param("mobile") mobile: string,
-    @Body() dto: SelectLanguageDto,
-  ) {
-    return this.languageService.createOrUpdateLanguage(mobile, dto);
+ 
+  @Post()
+  @ApiBody({ type: SelectLanguageDto })
+  setLanguage(@Body() dto: SelectLanguageDto) {
+    return this.languageService.setLanguage(dto);
   }
 
-  @Get(":mobile")
-  async getLanguage(@Param("mobile") mobile: string) {
-    return this.languageService.getLanguageByMobile(mobile);
-  }
-
+  // GET /language
   @Get()
-  async getAllLanguages() {
-    return this.languageService.getAllLanguages();
+  getLanguage() {
+    return this.languageService.getLanguage();
   }
 }
